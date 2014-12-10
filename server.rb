@@ -31,14 +31,28 @@ class Blogtastic::Server < Sinatra::Application
   # save and find users to handle the authentication process.
 
   get '/signup' do
-    # TODO: render template with form for user to sign up
+    # DONE: render template with form for user to sign up
+    erb :"/auth/signup"
   end
 
   post '/signup' do
-    # TODO: save user's info to db and create session
+    # DONE: save user's info to db and create session
     # Create the session by adding a new key value pair to the
     # session hash. The key should be 'user_id' and the value
     # should be the user id of the user who was just created.
+    db = Blogtastic.create_db_connection 'blogtastic'
+    @user_name = params["user_name"]
+    @user_pwd = params["user_pwd"]
+    
+    result = Blogtastic::UsersRepo.save db, :username => @user_name, :password => @user_pwd
+
+    if result
+      signin = Blogtastic::UsersRepo.find db, :username => @user_name
+      redirect "/posts"
+    else
+      alert("Signup did not complete properly. Please try again.")
+      redirect back
+    end
   end
 
   get '/signin' do
