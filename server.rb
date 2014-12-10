@@ -45,10 +45,14 @@ class Blogtastic::Server < Sinatra::Application
     @user_pwd = params["user_pwd"]
     
     result = Blogtastic::UsersRepo.save db, :username => @user_name, :password => @user_pwd
-
+    
     if result
-      signin = Blogtastic::UsersRepo.find db, :username => @user_name
-      redirect "/posts"
+      signin = Blogtastic::UsersRepo.find db, result["id"].to_i
+      if signin
+        session["user_id"] = signin["id"]
+        puts session
+        redirect "/posts"
+      end
     else
       alert("Signup did not complete properly. Please try again.")
       redirect back
@@ -56,7 +60,8 @@ class Blogtastic::Server < Sinatra::Application
   end
 
   get '/signin' do
-    # TODO: render template for user to sign in
+    # DONE: render template for user to sign in
+    erb :"/auth/signin"
   end
 
   post '/signin' do
@@ -67,7 +72,10 @@ class Blogtastic::Server < Sinatra::Application
   end
 
   get '/logout' do
-    # TODO: destroy the session
+    # DONE: destroy the session
+    # TODO: not have to click twice on logout to actually logout
+    session["user_id"] = 1
+    erb :"/auth/logout"
   end
 
   ###################################################################
