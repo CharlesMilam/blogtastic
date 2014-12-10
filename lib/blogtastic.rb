@@ -55,3 +55,5 @@ module Blogtastic
   end
 end
 
+# db = Blogtastic.create_db_connection("blogtastic")
+# Blogtastic.seed_db(db)
