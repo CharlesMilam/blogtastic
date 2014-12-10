@@ -69,6 +69,20 @@ class Blogtastic::Server < Sinatra::Application
     # Create the session by adding a new key value pair to the
     # session hash. The key should be 'user_id' and the value
     # should be the user id of the user who just logged in.
+    db = Blogtastic.create_db_connection 'blogtastic'
+    @user_name = params["user_name"]
+    @user_pwd = params["user_pwd"]
+
+    signin = Blogtastic::UsersRepo.find_by_name db, @user_name
+    if @user_pwd == signin["password"]
+      session["user_id"] = signin["id"]
+      puts session
+      redirect "/posts"
+    else
+      alert("Signup did not complete properly. Please try again.")
+      redirect back
+    end
+
   end
 
   get '/logout' do
