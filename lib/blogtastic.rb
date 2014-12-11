@@ -13,8 +13,8 @@ module Blogtastic
   def self.clear_db(db)
     db.exec <<-SQL
       DELETE FROM comments;
-      DELETE FROM posts;
-      DELETE FROM users;
+      DELETE FROM posts cascade;
+      DELETE FROM users cascade;
     SQL
   end
 
@@ -30,12 +30,18 @@ module Blogtastic
         title VARCHAR,
         content VARCHAR,
         user_id INT references users(id)
+        on delete cascade
+        on update cascade
       );
       CREATE TABLE IF NOT EXISTS comments(
         id SERIAL PRIMARY KEY,
         content VARCHAR,
-        user_id INT references users(id),
+        user_id INT references users(id)
+        on delete cascade
+        on update cascade,
         post_id INT references posts(id)
+        on delete cascade
+        on update cascade
       );
     SQL
   end
@@ -56,4 +62,6 @@ module Blogtastic
 end
 
 # db = Blogtastic.create_db_connection("blogtastic")
+# Blogtastic.drop_tables(db)
+# Blogtastic.create_tables(db)
 # Blogtastic.seed_db(db)
