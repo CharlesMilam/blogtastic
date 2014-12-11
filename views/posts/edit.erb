@@ -1,0 +1,13 @@
+<form action='/posts/edit/<%= @post["id"] %>' method='post'>
+  <!--<% if flash.has?(:error) %>
+    <div class="alert alert-block">
+      <%= flash[:error] %> 
+    </div>
+  <% end %>-->
+  <label>Title:</label>
+  <p><%= @title %></p>
+  <label>Content:</label>
+  <input type='textarea' value="<%= @content %>" style="width: 300px; text-align: left;" name='content'>
+  <input type='hidden' name='user_id' value="<%= @creator %>">
+  <div><input type='submit' value='Save'></div>
+</form>
