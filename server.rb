@@ -26,6 +26,10 @@ class Blogtastic::Server < Sinatra::Application
   ###################################################################
   # DO NOT EDIT ANYTHING ABOVE THIS AREA
   ###################################################################
+  #TODO: 1. Add the ability to delete a comment on a post *only if the current user is the owner of the comment*.
+  #TODO: 2. Add the ability to delete a post *only if the current user is the owner of the post*.
+  #TODO: 3. Add the ability for the *owner of a post* to delete any *comment* on his/her post (thanks Charles!).
+  #TODO: 4. Add the ability for the owner of a post to edit the content of his/her post.
 
   # Refer to `lib/blogtastic/repos/users_repo.rb` to see how you can
   # save and find users to handle the authentication process.
@@ -65,7 +69,7 @@ class Blogtastic::Server < Sinatra::Application
   end
 
   post '/signin' do
-    # TODO: validate users credentials and create session
+    # DONE: validate users credentials and create session
     # Create the session by adding a new key value pair to the
     # session hash. The key should be 'user_id' and the value
     # should be the user id of the user who just logged in.
@@ -82,8 +86,34 @@ class Blogtastic::Server < Sinatra::Application
       alert("Signup did not complete properly. Please try again.")
       redirect back
     end
-
   end
+
+   # get post to edit
+  get "/posts/edit/:id" do
+    # binding.pry
+    puts "in posts", params
+    db = Blogtastic.create_db_connection 'blogtastic'
+    @post = Blogtastic::PostsRepo.find db, params[:id]
+    @user = Blogtastic::UsersRepo.find db, @post['user_id']
+    @title = @post["title"]
+    @content = @post["content"]
+
+    erb :"/posts/edit"
+  end
+
+  # save edited post
+  post "/posts/edit/" do
+     post = {
+      title:   params[:title],
+      content: params[:content],
+      user_id:    params[:user_id]
+    }
+    db = Blogtastic.create_db_connection 'blogtastic'
+    Blogtastic::PostsRepo.save db, post
+
+    redirect to '/posts'
+  end
+
 
   get '/logout' do
     # DONE: destroy the session
