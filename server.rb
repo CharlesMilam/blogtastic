@@ -102,8 +102,10 @@ class Blogtastic::Server < Sinatra::Application
   end
 
   # save edited post
-  post "/posts/edit/" do
-     post = {
+  post "/posts/edit/:id" do
+    puts "edit params", params
+    post = {
+      id: params[:id],
       title:   params[:title],
       content: params[:content],
       user_id:    params[:user_id]
@@ -111,7 +113,7 @@ class Blogtastic::Server < Sinatra::Application
     db = Blogtastic.create_db_connection 'blogtastic'
     Blogtastic::PostsRepo.save db, post
 
-    redirect to '/posts'
+    redirect to "/posts"
   end
 
 
