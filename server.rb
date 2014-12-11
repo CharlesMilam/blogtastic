@@ -94,9 +94,10 @@ class Blogtastic::Server < Sinatra::Application
     puts "in posts", params
     db = Blogtastic.create_db_connection 'blogtastic'
     @post = Blogtastic::PostsRepo.find db, params[:id]
-    @user = Blogtastic::UsersRepo.find db, @post['user_id']
+    #@user = Blogtastic::UsersRepo.find db, @post['user_id']
     @title = @post["title"]
     @content = @post["content"]
+    @creator = @post["user_id"]
 
     erb :"/posts/edit"
   end
@@ -110,10 +111,17 @@ class Blogtastic::Server < Sinatra::Application
       content: params[:content],
       user_id:    params[:user_id]
     }
-    db = Blogtastic.create_db_connection 'blogtastic'
-    Blogtastic::PostsRepo.save db, post
+    puts "edit params/session", params[:user_id], session["user_id"]
+    if params[:user_id] == session["user_id"]
+      db = Blogtastic.create_db_connection 'blogtastic'
+      Blogtastic::PostsRepo.save db, post
 
-    redirect to "/posts"
+      redirect to "/posts"
+    else
+      flash[:alert] = "This is not your post. Go edit your own."
+      redirect to "/posts"
+    end
+      
   end
 
 
