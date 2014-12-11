@@ -103,6 +103,7 @@ class Blogtastic::Server < Sinatra::Application
   end
 
   # save edited post
+  # TODO: set alert if not owener of post
   post "/posts/edit/:id" do
     puts "edit params", params
     post = {
@@ -118,7 +119,7 @@ class Blogtastic::Server < Sinatra::Application
 
       redirect to "/posts"
     else
-      flash[:alert] = "This is not your post. Go edit your own."
+      flash[:error] = "This is not your post. Go edit your own."
       redirect to "/posts"
     end
       
